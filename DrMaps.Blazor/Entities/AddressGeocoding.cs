@@ -1,4 +1,4 @@
-﻿namespace DrMaps.Blazor;
+﻿namespace DrMaps.Blazor.Entities;
 public class AddressGeocoding
 {
     public int Id { get; set; }

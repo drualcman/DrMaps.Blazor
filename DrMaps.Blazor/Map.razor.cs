@@ -1,5 +1,3 @@
-using DrMaps.Blazor.Helpers;
-
 namespace DrMaps.Blazor
 {
     public partial class Map : IAsyncDisposable

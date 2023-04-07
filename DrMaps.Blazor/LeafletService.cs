@@ -1,6 +1,4 @@
-﻿using DrMaps.Blazor.Helpers;
-
-namespace DrMaps.Blazor;
+﻿namespace DrMaps.Blazor;
 public sealed class LeafletService : IAsyncDisposable
 {
     readonly Lazy<Task<IJSObjectReference>> ModuleTask;
