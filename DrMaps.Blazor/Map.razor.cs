@@ -1,3 +1,5 @@
+using System.Drawing;
+
 namespace DrMaps.Blazor
 {
     public partial class Map : IAsyncDisposable
@@ -9,6 +11,7 @@ namespace DrMaps.Blazor
         #region Parametros
         [Parameter] public LatLong OriginalPoint { get; set; } = new LatLong(15.192939, 120.586715);
         [Parameter] public byte ZoomLevel { get; set; } = 17;
+        [Parameter] public EventCallback<Map> OnMapCreatedAsync { get; set; }
         #endregion
 
         #region variables
@@ -21,41 +24,50 @@ namespace DrMaps.Blazor
         {
             if(firstRender)
             {
-                try
-                {
-                    await CreateMap(OriginalPoint, ZoomLevel);
-                    await ShowPoint(OriginalPoint, "Mi Casita", "La mas bonita");
-                }
-                catch(Exception ex)
-                {
-                    await Console.Out.WriteAsync(ex.ToString());
-                }
-                IsMapReady = true;
-                await InvokeAsync(StateHasChanged);
+                await CreateMap(OriginalPoint, ZoomLevel);
             }
         }
+        #endregion
 
+        #region IAsyncDisposable        
         public async ValueTask DisposeAsync()
         {
             await LeafletService.InvokeVoidAsync("deleteMap", MapId);
         }
         #endregion
 
-        #region Methods      
+        #region Methods publicos          
+
+        public Task<int> AddMarkerAsync(LatLong point, string title, string description) =>
+            LeafletService.InvokeAsyc<int>("addMarker", MapId, point, title, description);
+
+        public Task RemoveMarkersAsync() =>
+            LeafletService.InvokeVoidAsync("removeMarkers", MapId);  
+
+        public Task DrawCircleAsync(LatLong point, string color, string fillColor, double fillOpacity, double radius) =>
+            LeafletService.InvokeVoidAsync("drawCircle", MapId, point, color, fillColor, fillOpacity, radius); 
+
+        public Task SetViewAsync(LatLong point, byte zoomLevel = 17) =>
+            LeafletService.InvokeVoidAsync("setView", MapId, point, zoomLevel);
+
         public async Task CreateMap(LatLong point, byte zoomLevel = 17)
         {
-            await LeafletService.InvokeVoidAsync("createMap", MapId, point, zoomLevel);
+            try
+            {                                              
+                await LeafletService.InvokeVoidAsync("createMap", MapId, point, zoomLevel);
+                if(OnMapCreatedAsync.HasDelegate)
+                    await OnMapCreatedAsync.InvokeAsync(this);
+            }
+            catch(Exception ex)
+            {
+                await Console.Out.WriteAsync(ex.ToString());
+            }
+            IsMapReady = true;
+            await InvokeAsync(StateHasChanged);
         }
 
-        public async Task DeleteMap()
-        {
-            await LeafletService.InvokeVoidAsync("deleteMap", MapId);
-        }
-
-        public async Task ShowPoint(LatLong point, string title, string description)
-        {
-            await LeafletService.InvokeVoidAsync("addMarker", MapId, point, title, description);
-        }
+        public  Task DeleteMap()  =>
+            LeafletService.InvokeVoidAsync("deleteMap", MapId);
 
         public async Task<IEnumerable<AddressGeocoding>> GetAddress(Address geocoding)
         {

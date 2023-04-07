@@ -15,20 +15,29 @@ const getFromAddress = (street, city, state, postalcode, country) => {
     }).then((response) => {
         return response.json().then(data =>
         {
-            let count = data.length;
-            if (count > 0) {
-                for (var i = 0; i < count; i++) {
-                    let place = data[i];
-                    result.push({
-                            Point: {
-                            latitude: parseFloat(place.lat),
-                            longitude: parseFloat(place.lon)
-                            },
-                            DisplayName: place.display_name,
-                            Id: place.place_id
-                        });
-                }
-            }
+
+            data.forEach(place => result.push({
+                Point: {
+                    latitude: parseFloat(place.lat),
+                    longitude: parseFloat(place.lon)
+                },
+                DisplayName: place.display_name,
+                Id: place.place_id
+            }));
+            //let count = data.length;
+            //if (count > 0) {
+            //    for (var i = 0; i < count; i++) {
+            //        let place = data[i];
+            //        result.push({
+            //                Point: {
+            //                latitude: parseFloat(place.lat),
+            //                longitude: parseFloat(place.lon)
+            //                },
+            //                DisplayName: place.display_name,
+            //                Id: place.place_id
+            //            });
+            //    }
+            //}
             console.info('getLatLongFromAddress result:', result);
             return result;
         });

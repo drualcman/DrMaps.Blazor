@@ -47,17 +47,17 @@ const addMarker = (mapId, point, title, description) => {
 
 const removeMarkers = (mapId) => {
     let map = maps.get(mapId);
-    maps.addedMarkers.forEch(marker => marker.removeFrom(map));
-    maps.addedMarkers = [];
+    map.addedMarkers.forEach(marker => marker.removeFrom(map));
+    map.addedMarkers = [];
 }
 
-const drawCircle = (mapId, center, color, fillColor, fillOpacity, radious) => {
+const drawCircle = (mapId, center, color, fillColor, fillOpacity, radius) => {
     let map = maps.get(mapId);
     L.circle([center.latitude, center.longitude], {
         color: color,
         fillColor: fillColor,
         fillOpacity: fillOpacity,
-        radious: radious
+        radius: radius
     }).addTo(map); 
     //optionalmente, guardar el circulo
 }
