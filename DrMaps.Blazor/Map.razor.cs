@@ -34,20 +34,7 @@ namespace DrMaps.Blazor
         }
         #endregion
 
-        #region Methods publicos          
-
-        public Task<int> AddMarkerAsync(LatLong point, string title, string description) =>
-            LeafletService.InvokeAsyc<int>("addMarker", MapId, point, title, description);
-
-        public Task RemoveMarkersAsync() =>
-            LeafletService.InvokeVoidAsync("removeMarkers", MapId);
-
-        public Task DrawCircleAsync(LatLong point, string color, string fillColor, double fillOpacity, double radius) =>
-            LeafletService.InvokeVoidAsync("drawCircle", MapId, point, color, fillColor, fillOpacity, radius);
-
-        public Task SetViewAsync(LatLong point, byte zoomLevel = 17) =>
-            LeafletService.InvokeVoidAsync("setView", MapId, point, zoomLevel);
-
+        #region Methods publicos  
         public async Task CreateMap(LatLong point, byte zoomLevel = 17)
         {
             try
@@ -62,21 +49,24 @@ namespace DrMaps.Blazor
             }
             IsMapReady = true;
             await InvokeAsync(StateHasChanged);
-        }
+        } 
+        public Task SetViewAsync(LatLong point, byte zoomLevel = 17) =>
+            LeafletService.InvokeVoidAsync("setView", MapId, point, zoomLevel);
+        
+        public Task<int> AddMarkerAsync(LatLong point, string title, string description) =>
+            LeafletService.InvokeAsyc<int>("addMarker", MapId, point, title, description);
+
+        public Task RemoveMarkersAsync() =>
+            LeafletService.InvokeVoidAsync("removeMarkers", MapId);
+
+        public Task DrawCircleAsync(LatLong point, string color, string fillColor, double fillOpacity, double radius) =>
+            LeafletService.InvokeVoidAsync("drawCircle", MapId, point, color, fillColor, fillOpacity, radius);
 
         public Task DeleteMap() =>
             LeafletService.InvokeVoidAsync("deleteMap", MapId);
 
-        public async Task<IEnumerable<AddressGeocoding>> GetAddress(Address geocoding)
-        {
-            return await LeafletService.InvokeAsyc<IEnumerable<AddressGeocoding>>("geoCoder.getFromAddress",
-                geocoding.Street.ReplaceSpaceWithPlus(),
-                geocoding.City.ReplaceSpaceWithPlus(),
-                geocoding.State.ReplaceSpaceWithPlus(),
-                geocoding.Postalcode.ReplaceSpaceWithPlus(),
-                geocoding.Country.ReplaceSpaceWithPlus());
-        }
-
+        public async Task<IEnumerable<AddressGeocoding>> GetAddress(Address address) =>
+            await LeafletService.GetGeocodings(address);
         #endregion
     }
 }

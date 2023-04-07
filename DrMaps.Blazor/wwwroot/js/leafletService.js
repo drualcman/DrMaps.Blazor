@@ -1,5 +1,4 @@
 import * as L from "./leaflet.esm.js"
-import * as geoCoder from "./geoCoder.js"
 
 const maps = new Map();     // new Dictionary<string, object> in c#
 
@@ -62,4 +61,4 @@ const drawCircle = (mapId, center, color, fillColor, fillOpacity, radius) => {
     //optionalmente, guardar el circulo
 }
 
-export { createMap, deleteMap, setView, addMarker, removeMarkers, drawCircle, geoCoder }
+export { createMap, deleteMap, setView, addMarker, removeMarkers, drawCircle }

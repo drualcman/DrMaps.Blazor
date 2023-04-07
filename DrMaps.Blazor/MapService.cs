@@ -57,4 +57,20 @@ public sealed class MapService : IAsyncDisposable
             Console.WriteLine($"LeafletService: {ex}");
         }
     }
+
+    public async ValueTask<IEnumerable<AddressGeocoding>> GetGeocodings(Address address)
+    {
+        List<AddressGeocoding> result;
+        try
+        {
+            GeoCodeClient client = new(address);
+            result = await client.GetGeocodings();
+        }
+        catch(Exception ex)
+        {
+            result = new();
+            await Console.Out.WriteLineAsync(ex.Message);
+        }
+        return result;
+    }
 }
