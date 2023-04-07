@@ -1,5 +1,5 @@
 ﻿namespace DrMaps.Blazor.Entities;
-public class AddressGeocoding
+public class PlaceGeocoding
 {
     public int Id { get; set; }
     public LatLong Point { get; set; }

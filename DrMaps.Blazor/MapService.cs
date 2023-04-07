@@ -58,9 +58,9 @@ public sealed class MapService : IAsyncDisposable
         }
     }
 
-    public async ValueTask<IEnumerable<AddressGeocoding>> GetGeocodings(Address address)
+    public async ValueTask<IEnumerable<PlaceGeocoding>> GetGeocodings(Address address)
     {
-        List<AddressGeocoding> result;
+        List<PlaceGeocoding> result;
         try
         {
             GeoCodeClient client = new(address);

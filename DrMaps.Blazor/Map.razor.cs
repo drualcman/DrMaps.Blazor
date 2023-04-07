@@ -65,7 +65,7 @@ namespace DrMaps.Blazor
         public Task DeleteMap() =>
             LeafletService.InvokeVoidAsync("deleteMap", MapId);
 
-        public async Task<IEnumerable<AddressGeocoding>> GetAddress(Address address) =>
+        public async Task<IEnumerable<PlaceGeocoding>> GetAddress(Address address) =>
             await LeafletService.GetGeocodings(address);
         #endregion
     }

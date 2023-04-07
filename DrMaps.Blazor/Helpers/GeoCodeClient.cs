@@ -18,7 +18,7 @@ internal sealed class GeoCodeClient
                                    .Replace("[country]", address.Country);
     }
 
-    internal async Task<List<AddressGeocoding>> GetGeocodings()
+    internal async Task<List<PlaceGeocoding>> GetGeocodings()
     {
         using HttpClient client = new HttpClient()
         {
@@ -27,7 +27,7 @@ internal sealed class GeoCodeClient
         using HttpResponseMessage response = await client.GetAsync("", CancellationToken.None);
         response.EnsureSuccessStatusCode();
         IEnumerable<GeoCodeResponse> places = await response.Content.ReadFromJsonAsync<IEnumerable<GeoCodeResponse>>();
-        return places.Select(place => new AddressGeocoding
+        return places.Select(place => new PlaceGeocoding
         {
             Id = place.Place_Id,
             Point = new LatLong(place.Lat, place.Lon),
