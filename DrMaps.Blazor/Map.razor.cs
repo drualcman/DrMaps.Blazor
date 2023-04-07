@@ -1,5 +1,3 @@
-using System.Drawing;
-
 namespace DrMaps.Blazor
 {
     public partial class Map : IAsyncDisposable
@@ -42,10 +40,10 @@ namespace DrMaps.Blazor
             LeafletService.InvokeAsyc<int>("addMarker", MapId, point, title, description);
 
         public Task RemoveMarkersAsync() =>
-            LeafletService.InvokeVoidAsync("removeMarkers", MapId);  
+            LeafletService.InvokeVoidAsync("removeMarkers", MapId);
 
         public Task DrawCircleAsync(LatLong point, string color, string fillColor, double fillOpacity, double radius) =>
-            LeafletService.InvokeVoidAsync("drawCircle", MapId, point, color, fillColor, fillOpacity, radius); 
+            LeafletService.InvokeVoidAsync("drawCircle", MapId, point, color, fillColor, fillOpacity, radius);
 
         public Task SetViewAsync(LatLong point, byte zoomLevel = 17) =>
             LeafletService.InvokeVoidAsync("setView", MapId, point, zoomLevel);
@@ -53,7 +51,7 @@ namespace DrMaps.Blazor
         public async Task CreateMap(LatLong point, byte zoomLevel = 17)
         {
             try
-            {                                              
+            {
                 await LeafletService.InvokeVoidAsync("createMap", MapId, point, zoomLevel);
                 if(OnMapCreatedAsync.HasDelegate)
                     await OnMapCreatedAsync.InvokeAsync(this);
@@ -66,7 +64,7 @@ namespace DrMaps.Blazor
             await InvokeAsync(StateHasChanged);
         }
 
-        public  Task DeleteMap()  =>
+        public Task DeleteMap() =>
             LeafletService.InvokeVoidAsync("deleteMap", MapId);
 
         public async Task<IEnumerable<AddressGeocoding>> GetAddress(Address geocoding)

@@ -1,9 +1,9 @@
 ﻿namespace DrMaps.Blazor;
-public sealed class LeafletService : IAsyncDisposable
+public sealed class MapService : IAsyncDisposable
 {
     readonly Lazy<Task<IJSObjectReference>> ModuleTask;
 
-    public LeafletService(IJSRuntime jsRuntime)
+    public MapService(IJSRuntime jsRuntime)
     {
         ModuleTask = new Lazy<Task<IJSObjectReference>>(() => GetJSObjectReference(jsRuntime));
     }
