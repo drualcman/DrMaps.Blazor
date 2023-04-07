@@ -3,7 +3,7 @@ public static class DependencyContainer
 {
     public static IServiceCollection AddMapsService(this IServiceCollection services)
     {
-        services.AddSingleton<LeafletService>();
+        services.AddSingleton<MapService>();
         return services;
     }
 }

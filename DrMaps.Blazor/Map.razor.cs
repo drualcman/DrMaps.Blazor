@@ -5,7 +5,7 @@ namespace DrMaps.Blazor
     public partial class Map : IAsyncDisposable
     {
         #region inyeccion de servicios
-        [Inject] LeafletService LeafletService { get; set; }
+        [Inject] MapService LeafletService { get; set; }
         #endregion
 
         #region Parametros
