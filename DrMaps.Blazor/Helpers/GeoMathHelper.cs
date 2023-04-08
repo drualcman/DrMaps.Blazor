@@ -14,10 +14,14 @@ internal class GeoMathHelper
 	internal double ConvertToGrades(double rad) =>
 		rad * (180.0 / Math.PI);
 
-	internal double CalculateDistance(double distance)
+	internal double CalculateRandomDistance(double distance)
 	{
 		Random random = new Random();
-		double result = distance * Math.Sqrt(random.NextDouble());
+		int randomNum = random.Next(1,10);
+		bool toLeft = randomNum % 2 == 0;
+		double sqrt = Math.Sqrt(random.NextDouble());
+		if(toLeft) sqrt *= -1;
+		double result = distance * sqrt;
 		return result;
 	}
 

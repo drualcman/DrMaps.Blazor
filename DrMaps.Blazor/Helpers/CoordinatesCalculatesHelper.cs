@@ -13,7 +13,7 @@ internal class CoordinatesCalculatesHelper
 		double latitudeInRadians = Maths.ConvertToRadians(origin.Latitude);
 		double longitudeInRadians = Maths.ConvertToRadians(origin.Longitude);
 		double angleRadians = Maths.CalculateRandomAngleInRadians();
-		double distance = Maths.CalculateDistance(distanceInKm);
+		double distance = Maths.CalculateRandomDistance(distanceInKm);
 		double latitudePuntoRadians = CalculateLatitudeInsideRadio(latitudeInRadians, distance, angleRadians);
 		double longitudePuntoRadians = CalculateLongitudeInsideRadio(longitudeInRadians, distance, angleRadians);
 		return CreatePointFromRadians(latitudePuntoRadians, longitudePuntoRadians);
