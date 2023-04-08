@@ -67,6 +67,17 @@ namespace DrMaps.Blazor
 
         public async Task<IEnumerable<PlaceGeocoding>> GetAddress(Address address) =>
             await LeafletService.GetGeocodings(address);
+
+        public LatLong CalculateRandomPointNear(LatLong center, double distanceInKm)
+        {
+            CoordinatesCalculatesHelper calculates = new CoordinatesCalculatesHelper();
+            return calculates.CalculateRandomPoint(center, distanceInKm);
+        } 
+        public double GetDistanceBetween(LatLong origin, LatLong destination)
+        {
+            CoordinatesCalculatesHelper calculates = new CoordinatesCalculatesHelper();
+            return calculates.CalculateDistanceInKm(origin, destination);
+        }
         #endregion
     }
 }
