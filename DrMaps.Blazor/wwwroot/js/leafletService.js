@@ -34,11 +34,15 @@ const setView = (mapId, point, zoomLevel) => {
     map.setView([point.latitude, point.longitude], zoomLevel);
 }
 
-const addMarker = (mapId, point, title, description) => {
+const addMarker = (mapId, point, title, description, iconUrl) => {
     let map = maps.get(mapId);
-    let marker = L.marker([point.latitude, point.longitude], {
+    let options = {
         title: title
-    })
+    }
+    if (iconUrl) {
+        options.icon = L.icon({ iconUrl: iconUrl, iconSize: [32, 32], iconAnchor: [16, 16] });
+    }
+    let marker = L.marker([point.latitude, point.longitude], options)
         .bindPopup(description)
         .addTo(map);
     return map.addedMarkers.push(marker) - 1;       // Devuelve el indice del elemento insertado
@@ -61,4 +65,10 @@ const drawCircle = (mapId, center, color, fillColor, fillOpacity, radius) => {
     //optionalmente, guardar el circulo
 }
 
-export { createMap, deleteMap, setView, addMarker, removeMarkers, drawCircle }
+const moveMarker = (mapId, markerId, newPoint) => {
+    let map = maps.get(mapId);
+    let marker = map.addedMarkers[markerId];
+    marker.setLatLng([newPoint.latitude, newPoint.longitude]);
+}
+
+export { createMap, deleteMap, setView, addMarker, removeMarkers, drawCircle, moveMarker }

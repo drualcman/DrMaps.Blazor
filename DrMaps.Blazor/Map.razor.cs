@@ -52,9 +52,21 @@ namespace DrMaps.Blazor
         } 
         public Task SetViewAsync(LatLong point, byte zoomLevel = 17) =>
             LeafletService.InvokeVoidAsync("setView", MapId, point, zoomLevel);
-        
-        public Task<int> AddMarkerAsync(LatLong point, string title, string description) =>
-            LeafletService.InvokeAsyc<int>("addMarker", MapId, point, title, description);
+
+        public Task<int> AddMarkerAsync(LatLong point, string title, string description, Icon icon = Icon.PIN) 
+        {
+            return LeafletService.InvokeAsyc<int>("addMarker", MapId, point, title, description, GetIconUrl(icon));
+        }
+
+        private string GetIconUrl(Icon icon)
+        {
+            string useIcon = icon switch
+            {
+                Icon.DRON => "drone",
+                _ => "marker-icon"
+            };
+            return  $"./{ContentHelper.ContentPath}/css/images/{useIcon}.png";
+        }
 
         public Task RemoveMarkersAsync() =>
             LeafletService.InvokeVoidAsync("removeMarkers", MapId);
@@ -64,19 +76,17 @@ namespace DrMaps.Blazor
 
         public Task DeleteMap() =>
             LeafletService.InvokeVoidAsync("deleteMap", MapId);
+          
+        public Task MoveMarketAsync(int markerId, LatLong newPosition) =>  
+            LeafletService.InvokeVoidAsync("moveMarker", MapId, markerId, newPosition);
 
         public async Task<IEnumerable<PlaceGeocoding>> GetAddress(Address address) =>
             await LeafletService.GetGeocodings(address);
-
-        public LatLong CalculateRandomPointNear(LatLong center, double distanceInKm)
+ 
+        public double GetDistanceInMettersBetween(LatLong origin, LatLong destination)
         {
             CoordinatesCalculatesHelper calculates = new CoordinatesCalculatesHelper();
-            return calculates.CalculateRandomPoint(center, distanceInKm);
-        } 
-        public double GetDistanceBetween(LatLong origin, LatLong destination)
-        {
-            CoordinatesCalculatesHelper calculates = new CoordinatesCalculatesHelper();
-            return calculates.CalculateDistanceInKm(origin, destination);
+            return calculates.CalculateDistanceInMetters(origin, destination);
         }
         #endregion
     }

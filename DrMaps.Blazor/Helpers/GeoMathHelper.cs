@@ -8,6 +8,9 @@ internal class GeoMathHelper
 		return randomAngle;
 	}
 
+	internal double CalculateRandomDegrees() =>
+		new Random().Next(0, 360);
+
 	internal double ConvertToRadians(double grados) =>
 		grados * (Math.PI / 180.0);
 

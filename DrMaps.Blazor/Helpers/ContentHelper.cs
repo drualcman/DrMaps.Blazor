@@ -1,6 +1,4 @@
-﻿using static System.Net.Mime.MediaTypeNames;
-
-namespace DrMaps.Blazor.Helpers;
+﻿namespace DrMaps.Blazor.Helpers;
 internal static class ContentHelper
 {
     public static string ContentPath => $"_content/{typeof(ContentHelper).Assembly.GetName().Name}";
