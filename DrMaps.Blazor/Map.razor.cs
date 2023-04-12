@@ -63,6 +63,7 @@ namespace DrMaps.Blazor
             string useIcon = icon switch
             {
                 Icon.DRON => "drone",
+                Icon.DESTINATION => "destination",
                 _ => "marker-icon"
             };
             return  $"./{ContentHelper.ContentPath}/css/images/{useIcon}.png";

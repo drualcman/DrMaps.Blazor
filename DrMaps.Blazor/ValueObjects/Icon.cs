@@ -2,5 +2,6 @@
 public enum Icon
 {
     PIN, 
-    DRON
+    DRON,
+    DESTINATION
 }
