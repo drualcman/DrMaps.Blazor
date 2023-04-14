@@ -8,8 +8,9 @@ namespace DrMaps.Blazor
 
         #region Parametros
         [Parameter] public LatLong OriginalPoint { get; set; } = new LatLong(15.192939, 120.586715);
-        [Parameter] public byte ZoomLevel { get; set; } = 17;
+        [Parameter] public byte ZoomLevel { get; set; } = 19;
         [Parameter] public EventCallback<Map> OnMapCreatedAsync { get; set; }
+        [Parameter] public EventCallback<LatLong> OnDragAsync { get; set; }
         #endregion
 
         #region variables
@@ -18,6 +19,10 @@ namespace DrMaps.Blazor
         #endregion
 
         #region Overrides
+        protected override void OnInitialized()
+        {
+            ObjRef = DotNetObjectReference.Create(this);
+        }
         protected override async Task OnAfterRenderAsync(bool firstRender)
         {
             if(firstRender)
@@ -31,11 +36,12 @@ namespace DrMaps.Blazor
         public async ValueTask DisposeAsync()
         {
             await LeafletService.InvokeVoidAsync("deleteMap", MapId);
+            ObjRef.Dispose();
         }
         #endregion
 
         #region Methods publicos  
-        public async Task CreateMap(LatLong point, byte zoomLevel = 17)
+        public async Task CreateMap(LatLong point, byte zoomLevel = 19)
         {
             try
             {
@@ -49,14 +55,24 @@ namespace DrMaps.Blazor
             }
             IsMapReady = true;
             await InvokeAsync(StateHasChanged);
-        } 
-        public Task SetViewAsync(LatLong point, byte zoomLevel = 17) =>
+        }
+        public Task SetViewAsync(LatLong point, byte zoomLevel = 19) =>
             LeafletService.InvokeVoidAsync("setView", MapId, point, zoomLevel);
 
-        public Task<int> AddMarkerAsync(LatLong point, string title, string description, Icon icon = Icon.PIN) 
+
+        public Task<int> AddMarkerAsync(LatLong point, string title, string description, string iconUrl, bool dragdable)
         {
-            return LeafletService.InvokeAsyc<int>("addMarker", MapId, point, title, description, GetIconUrl(icon));
+            return LeafletService.InvokeAsyc<int>("addMarker", MapId, point, title, description, iconUrl, dragdable, ObjRef);
         }
+
+        public Task<int> AddMarkerAsync(LatLong point, string title, string description, Icon icon, bool dragdable = false) =>
+            AddMarkerAsync(point, title, description, GetIconUrl(icon), dragdable);
+
+        public Task<int> AddMarkerAsync(LatLong point, string title, string description, Icon icon = Icon.PIN) =>
+            AddMarkerAsync(point, title, description, GetIconUrl(icon), false);
+
+        public Task<int> AddMarkerAsync(LatLong point, string title, string description, bool dragdable) =>
+            AddMarkerAsync(point, title, description, "marker-icon", dragdable);
 
         private string GetIconUrl(Icon icon)
         {
@@ -66,7 +82,7 @@ namespace DrMaps.Blazor
                 Icon.DESTINATION => "destination",
                 _ => "marker-icon"
             };
-            return  $"./{ContentHelper.ContentPath}/css/images/{useIcon}.png";
+            return $"./{ContentHelper.ContentPath}/css/images/{useIcon}.png";
         }
 
         public Task RemoveMarkersAsync() =>
@@ -77,17 +93,28 @@ namespace DrMaps.Blazor
 
         public Task DeleteMap() =>
             LeafletService.InvokeVoidAsync("deleteMap", MapId);
-          
-        public Task MoveMarketAsync(int markerId, LatLong newPosition) =>  
+
+        public Task MoveMarketAsync(int markerId, LatLong newPosition) =>
             LeafletService.InvokeVoidAsync("moveMarker", MapId, markerId, newPosition);
 
         public async Task<IEnumerable<PlaceGeocoding>> GetAddress(Address address) =>
             await LeafletService.GetGeocodings(address);
- 
+
         public double GetDistanceInMettersBetween(LatLong origin, LatLong destination)
         {
             CoordinatesCalculatesHelper calculates = new CoordinatesCalculatesHelper();
             return calculates.CalculateDistanceInMetters(origin, destination);
+        }
+        #endregion
+
+        #region Javascript events
+        DotNetObjectReference<Map> ObjRef;
+        [JSInvokable]
+        public Task OnDragend(LatLong point)
+        {
+            if(OnDragAsync.HasDelegate)
+                OnDragAsync.InvokeAsync(point);
+            return Task.CompletedTask;
         }
         #endregion
     }

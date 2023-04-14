@@ -34,10 +34,11 @@ const setView = (mapId, point, zoomLevel) => {
     map.setView([point.latitude, point.longitude], zoomLevel);
 }
 
-const addMarker = (mapId, point, title, description, iconUrl) => {
+const addMarker = (mapId, point, title, description, iconUrl, dragable, dotNet) => {
     let map = maps.get(mapId);
     let options = {
-        title: title
+        title: title,
+        draggable: 'true' 
     }
     if (iconUrl) {
         options.icon = L.icon({ iconUrl: iconUrl, iconSize: [32, 32], iconAnchor: [16, 16] });
@@ -45,6 +46,17 @@ const addMarker = (mapId, point, title, description, iconUrl) => {
     let marker = L.marker([point.latitude, point.longitude], options)
         .bindPopup(description)
         .addTo(map);
+    if (dragable) {
+        marker.on('dragend', function (event) {
+            let marker = event.target;
+            let position = marker.getLatLng();
+            let point = {
+                Latitude: position.lat,
+                Longitude: position.lng
+            }
+            dotNet.invokeMethodAsync("OnDragend", point);
+        });
+    }
     return map.addedMarkers.push(marker) - 1;       // Devuelve el indice del elemento insertado
 }
 
