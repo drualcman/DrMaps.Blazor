@@ -38,7 +38,7 @@ const addMarker = (mapId, point, title, description, iconUrl, dragable, dotNet) 
     let map = maps.get(mapId);
     let options = {
         title: title,
-        draggable: 'true' 
+        draggable: dragable 
     }
     if (iconUrl) {
         options.icon = L.icon({ iconUrl: iconUrl, iconSize: [32, 32], iconAnchor: [16, 16] });
