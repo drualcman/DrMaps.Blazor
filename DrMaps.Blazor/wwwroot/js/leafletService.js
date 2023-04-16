@@ -54,7 +54,10 @@ const addMarker = (mapId, point, title, description, iconUrl, dragable, dotNet) 
                 Latitude: position.lat,
                 Longitude: position.lng
             }
-            dotNet.invokeMethodAsync("OnDragend", point);
+            if (dotNet !== null && dotNet !== undefined)
+                dotNet.invokeMethodAsync("OnDragend", point);
+            else
+                console.warn("Can't connect with the app.");
         });
     }
     return map.addedMarkers.push(marker) - 1;       // Devuelve el indice del elemento insertado
