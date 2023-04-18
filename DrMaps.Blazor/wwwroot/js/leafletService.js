@@ -34,33 +34,49 @@ const setView = (mapId, point, zoomLevel) => {
     map.setView([point.latitude, point.longitude], zoomLevel);
 }
 
-const addMarker = (mapId, point, title, description, iconUrl, dragable, dotNet) => {
+const addMarkerWithOptions = (mapId, point, description, options) => {
     let map = maps.get(mapId);
+    let marker = L.marker([point.latitude, point.longitude], options)
+        .bindPopup(description)
+        .addTo(map);
+    let marketId = map.addedMarkers.push(marker) - 1;
+    return marketId;       // Devuelve el indice del elemento insertado
+}
+
+const buildMarkerOptions = (title, iconUrl, draggable) => {
     let options = {
-        title: title,
-        draggable: dragable 
+        title: title
     }
     if (iconUrl) {
         options.icon = L.icon({ iconUrl: iconUrl, iconSize: [32, 32], iconAnchor: [16, 16] });
     }
-    let marker = L.marker([point.latitude, point.longitude], options)
-        .bindPopup(description)
-        .addTo(map);
-    if (dragable) {
-        marker.on('dragend', function (event) {
-            let marker = event.target;
-            let position = marker.getLatLng();
-            let point = {
-                Latitude: position.lat,
-                Longitude: position.lng
-            }
-            if (dotNet !== null && dotNet !== undefined)
-                dotNet.invokeMethodAsync("OnDragend", point);
-            else
-                console.warn("Can't connect with the app.");
-        });
+    if (draggable) {
+        options.draggable = draggable
     }
-    return map.addedMarkers.push(marker) - 1;       // Devuelve el indice del elemento insertado
+    return options;
+}
+
+const addMarker = (mapId, point, title, description, iconUrl) =>
+    addMarkerWithOptions(mapId, point, description, buildMarkerOptions(title, iconUrl));
+
+const addDraggableMarker = (mapId, point, title, description, iconUrl, dotNet) => {
+    let options = buildMarkerOptions(title, iconUrl, true);
+    let markerId = addMarkerWithOptions(mapId, point, description, options);
+    let map = maps.get(mapId);
+    let marker = map.addedMarkers[markerId];
+    marker.on('dragend', function (event) {
+        let marker = event.target;
+        let position = marker.getLatLng();
+        let point = {
+            Latitude: position.lat,
+            Longitude: position.lng
+        }
+        if (dotNet !== null && dotNet !== undefined)
+            dotNet.invokeMethodAsync("OnDragend", markerId, point);
+        else
+            console.warn("Can't connect with the app.");
+    });    
+    return markerId;       // Devuelve el indice del elemento insertado
 }
 
 const removeMarkers = (mapId) => {
@@ -86,4 +102,4 @@ const moveMarker = (mapId, markerId, newPoint) => {
     marker.setLatLng([newPoint.latitude, newPoint.longitude]);
 }
 
-export { createMap, deleteMap, setView, addMarker, removeMarkers, drawCircle, moveMarker }
+export { createMap, deleteMap, setView, addMarker, addMarkerWithOptions, addDraggableMarker, removeMarkers, drawCircle, moveMarker, buildMarkerOptions }
