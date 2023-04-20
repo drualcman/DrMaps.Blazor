@@ -59,24 +59,37 @@ const buildMarkerOptions = (title, iconUrl, draggable) => {
 const addMarker = (mapId, point, title, description, iconUrl) =>
     addMarkerWithOptions(mapId, point, description, buildMarkerOptions(title, iconUrl));
 
-const addDraggableMarker = (mapId, point, title, description, iconUrl, dotNet) => {
+const addDraggableMarker = (mapId, point, title, description, iconUrl) => {
     let options = buildMarkerOptions(title, iconUrl, true);
     let markerId = addMarkerWithOptions(mapId, point, description, options);
     let map = maps.get(mapId);
-    let marker = map.addedMarkers[markerId];
+    let marker = GetMarker(mapId, markerId);
     marker.on('dragend', function (event) {
         let marker = event.target;
         let position = marker.getLatLng();
         let point = {
-            Latitude: position.lat,
-            Longitude: position.lng
-        }
+            MarkerId: markerId,
+            Point: {
+                Latitude: position.lat,
+                Longitude: position.lng
+            }
+        };
+        let dotNet = map.markerHelper.dotNetObjectReference;
+        let dragendHandler = map.markerHelper.dragendHandler;
         if (dotNet !== null && dotNet !== undefined)
-            dotNet.invokeMethodAsync("OnDragend", markerId, point);
+            dotNet.invokeMethodAsync(dragendHandler, point);
         else
             console.warn("Can't connect with the app.");
     });    
     return markerId;       // Devuelve el indice del elemento insertado
+}
+
+const setMarkerHelper = (mapId, dotNet, dragendHandler) => {
+    let map = maps.get(mapId);
+    map.markerHelper = {
+        dotNetObjectReference: dotNet,
+        dragendHandler: dragendHandler
+    };
 }
 
 const removeMarkers = (mapId) => {
@@ -97,9 +110,20 @@ const drawCircle = (mapId, center, color, fillColor, fillOpacity, radius) => {
 }
 
 const moveMarker = (mapId, markerId, newPoint) => {
-    let map = maps.get(mapId);
-    let marker = map.addedMarkers[markerId];
-    marker.setLatLng([newPoint.latitude, newPoint.longitude]);
+    GetMarker(mapId, markerId)
+        .setLatLng([newPoint.latitude, newPoint.longitude]);
 }
 
-export { createMap, deleteMap, setView, addMarker, addMarkerWithOptions, addDraggableMarker, removeMarkers, drawCircle, moveMarker, buildMarkerOptions }
+const setPopupMarkerContent = (mapId, markerId, content) => {
+    GetMarker(mapId, markerId)
+        .setPopupContent(content);
+}
+
+const GetMarker = (mapId, markerId) =>
+    maps.get(mapId).addedMarkers[markerId];
+
+export {
+    createMap, deleteMap, setView, addMarker, addMarkerWithOptions, addDraggableMarker,
+    removeMarkers, drawCircle, moveMarker, buildMarkerOptions, setMarkerHelper,
+    setPopupMarkerContent
+}

@@ -10,7 +10,7 @@ namespace DrMaps.Blazor
         [Parameter] public LatLong OriginalPoint { get; set; } = new LatLong(15.192939, 120.586715);
         [Parameter] public byte ZoomLevel { get; set; } = 19;
         [Parameter] public EventCallback<Map> OnMapCreatedAsync { get; set; }
-        [Parameter] public EventCallback<DraggedEventArgs> OnDragAsync { get; set; }
+        [Parameter] public EventCallback<DragendMarkerEventArgs> OnDragendAsync { get; set; }
         #endregion
 
         #region variables
@@ -67,11 +67,19 @@ namespace DrMaps.Blazor
         public Task<int> AddMarkerAsync(LatLong point, string title, string description) =>
             AddMarkerAsync(point, title, description, "marker-icon");   
 
-        public Task<int> AddDraggableMarkerAsync(LatLong point, string title, string description, string iconUrl)
+        public async Task<int> AddDraggableMarkerAsync(LatLong point, string title, string description, string iconUrl)
         {
-            if (ObjRef is null)
+            await SetDotNetObjectReference();
+            return await LeafletService.InvokeAsyc<int>("addDraggableMarker", MapId, point, title, description, iconUrl);
+        }
+
+        async ValueTask SetDotNetObjectReference()
+        {
+            if(ObjRef is null)
+            {
                 ObjRef = DotNetObjectReference.Create(this);
-            return LeafletService.InvokeAsyc<int>("addDraggableMarker", MapId, point, title, description, iconUrl, ObjRef);
+                await LeafletService.InvokeVoidAsync("setMarkerHelper", MapId, ObjRef, nameof(OnDragend));
+            }
         }
 
         public Task<int> AddDraggableMarkerAsync(LatLong point, string title, string description, Icon icon = Icon.PIN) =>
@@ -102,6 +110,9 @@ namespace DrMaps.Blazor
 
         public Task MoveMarketAsync(int markerId, LatLong newPosition) =>
             LeafletService.InvokeVoidAsync("moveMarker", MapId, markerId, newPosition);
+        
+        public Task SetPopupMarkerContent(int markerId, string content) =>
+            LeafletService.InvokeVoidAsync("setPopupMarkerContent", MapId, markerId, content);
 
         public async Task<IEnumerable<PlaceGeocoding>> GetAddress(Address address) =>
             await LeafletService.GetGeocodings(address);
@@ -110,16 +121,16 @@ namespace DrMaps.Blazor
         {
             CoordinatesCalculatesHelper calculates = new CoordinatesCalculatesHelper();
             return calculates.CalculateDistanceInMetters(origin, destination);
-        }
+        } 
         #endregion
 
         #region Javascript events
         DotNetObjectReference<Map> ObjRef;
         [JSInvokable]
-        public Task OnDragend(int markerId, LatLong point)
+        public Task OnDragend(DragendMarkerEventArgs e)
         {
-            if(OnDragAsync.HasDelegate)
-                OnDragAsync.InvokeAsync(new DraggedEventArgs(markerId, point));
+            if(OnDragendAsync.HasDelegate)
+                OnDragendAsync.InvokeAsync(e);
             return Task.CompletedTask;
         }
         #endregion
