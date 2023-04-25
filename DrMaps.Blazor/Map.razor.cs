@@ -58,11 +58,11 @@ namespace DrMaps.Blazor
 
         public Task<int> AddMarkerAsync(LatLong point, string title, string description, string iconUrl)
         {
-            return LeafletService.InvokeAsyc<int>("addMarker", MapId, point, title, description, iconUrl);
+            return LeafletService.InvokeAsyc<int>("addMarker", MapId, point, title, description, GetIconUrl(iconUrl));
         }
 
         public Task<int> AddMarkerAsync(LatLong point, string title, string description, Icon icon = Icon.PIN) =>
-            AddMarkerAsync(point, title, description, GetIconUrl(icon));
+            AddMarkerAsync(point, title, description, GetIcon(icon));
 
         public Task<int> AddMarkerAsync(LatLong point, string title, string description) =>
             AddMarkerAsync(point, title, description, "marker-icon");   
@@ -70,7 +70,7 @@ namespace DrMaps.Blazor
         public async Task<int> AddDraggableMarkerAsync(LatLong point, string title, string description, string iconUrl)
         {
             await SetDotNetObjectReference();
-            return await LeafletService.InvokeAsyc<int>("addDraggableMarker", MapId, point, title, description, iconUrl);
+            return await LeafletService.InvokeAsyc<int>("addDraggableMarker", MapId, point, title, description, GetIconUrl(iconUrl));
         }
 
         async ValueTask SetDotNetObjectReference()
@@ -83,20 +83,26 @@ namespace DrMaps.Blazor
         }
 
         public Task<int> AddDraggableMarkerAsync(LatLong point, string title, string description, Icon icon = Icon.PIN) =>
-            AddDraggableMarkerAsync(point, title, description, GetIconUrl(icon));
+            AddDraggableMarkerAsync(point, title, description, GetIcon(icon));
 
         public Task<int> AddDraggableMarkerAsync(LatLong point, string title, string description) =>
             AddDraggableMarkerAsync(point, title, description, "marker-icon");
 
-        private string GetIconUrl(Icon icon)
+        private string GetIcon(Icon icon)
         {
             string useIcon = icon switch
             {
                 Icon.DRON => "drone",
+                Icon.HOME => "destination",
                 Icon.DESTINATION => "destination",
                 _ => "marker-icon"
             };
-            return $"./{ContentHelper.ContentPath}/css/images/{useIcon}.png";
+            return useIcon;
+        } 
+        private string GetIconUrl(string iconUrl)
+        {
+            if(iconUrl.Contains("http")) return iconUrl;
+            else return $"./{ContentHelper.ContentPath}/css/images/{iconUrl}.png";
         }
 
         public Task RemoveMarkersAsync() =>
