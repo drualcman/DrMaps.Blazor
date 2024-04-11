@@ -3,7 +3,7 @@
 namespace DrMaps.Blazor.Helpers;
 internal sealed class GeoCodeClient
 {
-    const string BaseUrl = "https://geocode.maps.co/search?";
+    const string BaseUrl = "https://geocode.maps.co/search?api_key=6617797aed65d703214260qyc8c56a0&";
     const string QueryStringVariables = "street=[street]&city=[city]&state=[state]&postalcode=[postalcode]&country=[country]";
 
     readonly string Url;
