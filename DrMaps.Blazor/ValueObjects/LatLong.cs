@@ -1,5 +1,5 @@
 ﻿namespace DrMaps.Blazor.ValueObjects;
-public record struct LatLong(double Latitude, double Longitude) 
+public record struct LatLong(double Latitude, double Longitude)
 {
     public LatLong AddMetters(double angle, double distanceInMetters)
     {

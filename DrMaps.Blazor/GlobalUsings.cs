@@ -5,3 +5,4 @@ global using DrMaps.Blazor.ValueObjects;
 global using Microsoft.AspNetCore.Components;
 global using Microsoft.JSInterop;
 global using DrMaps.Blazor.Services;
+global using DrMaps.Blazor.Interfaces;

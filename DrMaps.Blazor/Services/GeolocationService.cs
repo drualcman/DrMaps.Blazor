@@ -1,5 +1,5 @@
 namespace DrMaps.Blazor.Services;
-public class GeolocationService : IAsyncDisposable
+public class GeolocationService : IAsyncDisposable, IGeolocationService
 {
     private readonly Lazy<Task<IJSObjectReference>> ModuleTask;
 
@@ -9,7 +9,7 @@ public class GeolocationService : IAsyncDisposable
             "import", $"./{ContentHelper.ContentPath}/js/geolocation.js").AsTask());
     }
 
-    public async ValueTask<LatLongPosition> GetPositionAsync()
+    public async ValueTask<ILatLong> GetPositionAsync()
     {
         var module = await ModuleTask.Value;
         LatLongPosition postition = default;
@@ -25,7 +25,7 @@ public class GeolocationService : IAsyncDisposable
         return postition;
     }
 
-    public async ValueTask<bool> IsGeoLocationGranted()
+    public async ValueTask<bool> GetGeoLocationGrantedAsync()
     {
         var module = await ModuleTask.Value;
         bool result;
