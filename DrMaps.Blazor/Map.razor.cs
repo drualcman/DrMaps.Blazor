@@ -11,6 +11,7 @@ namespace DrMaps.Blazor
         [Parameter] public byte ZoomLevel { get; set; } = 19;
         [Parameter] public EventCallback<Map> OnMapCreatedAsync { get; set; }
         [Parameter] public EventCallback<DragendMarkerEventArgs> OnDragendAsync { get; set; }
+        [Parameter(CaptureUnmatchedValues = true)] public Dictionary<string, object> Attributes { get; set; }
         #endregion
 
         #region variables
