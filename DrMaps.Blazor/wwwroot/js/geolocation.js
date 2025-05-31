@@ -35,7 +35,6 @@ function getPositionAsync() {
 function checkGeolocationPermission() {
     return navigator.permissions.query({ name: 'geolocation' })
         .then((permissionStatus) => {
-            console.log(`permissionStatus.state ${permissionStatus.state}`);
             return permissionStatus.state === 'granted';
         })
         .catch((error) => {
